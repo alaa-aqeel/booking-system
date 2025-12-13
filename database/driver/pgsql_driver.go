@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"sync"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var (
@@ -23,8 +25,8 @@ func NewDatabase() *Database {
 	return database
 }
 
-func (p *Database) Connect(ctx context.Context, driverName, dsn string) error {
-	sql, err := sql.Open(driverName, dsn)
+func (p *Database) Connect(ctx context.Context, dsn string) error {
+	sql, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return MapPgError(err)
 	}
