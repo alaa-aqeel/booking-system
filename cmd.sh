@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# ===============================
+# Load .env if exists
+# ===============================
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)
+fi
+
+# ===============================
+# Configuration
+# ===============================
+DB_DRIVER="postgres"   # postgres | mysql
+DB_URL="${DATABASE_URL}"
+MIGRATIONS_DIR="database/migrations"
+
+# ===============================
+# Validation
+# ===============================
+if [ -z "$DB_URL" ]; then
+  echo "❌ DATABASE_URL is not set"
+  exit 1
+fi
+
+# ===============================
+# Commands
+# ===============================
+case "$1" in
+  up)
+    echo "🚀 Running migrations UP..."
+    migrate -path "$MIGRATIONS_DIR" -database "$DB_URL" up
+    ;;
+
+  down)
+    echo "⬇️  Rolling back last migration..."
+    migrate -path "$MIGRATIONS_DIR" -database "$DB_URL" down 1
+    ;;
+
+  reset)
+    echo "🔥 Resetting database..."
+    migrate -path "$MIGRATIONS_DIR" -database "$DB_URL" down
+    migrate -path "$MIGRATIONS_DIR" -database "$DB_URL" up
+    ;;
+
+  version)
+    migrate -path "$MIGRATIONS_DIR" -database "$DB_URL" version
+    ;;
+
+  *)
+    echo "Usage: ./migrate.sh [up|down|reset|version]"
+    exit 1
+    ;;
+esac
+
+echo "✅ Done"
