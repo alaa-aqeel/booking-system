@@ -6,10 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/alaa-aqeel/booking-system/app/domain"
 	"github.com/alaa-aqeel/booking-system/app/services"
 	database "github.com/alaa-aqeel/booking-system/database/driver"
-	"github.com/alaa-aqeel/optional-value"
 	"github.com/joho/godotenv"
 )
 
@@ -26,14 +24,22 @@ func main() {
 	defer db.Close()
 
 	services := services.NewServices(db)
-	services.User.Create(domain.CreateUserCommand{
-		Username: optional.SetValue("alaa_aqeel-2"),
-		Password: optional.SetValue("123456"),
-	})
 
-	res, errs := services.User.GetAll(domain.UserQuery{
-		IsActive: optional.SetValue(false),
-	})
-	fmt.Println(errs)
-	fmt.Println(res)
+	row, err := services.User.Row(context.Background(), services.User.Query().Columns("id").Limit(1))
+	fmt.Println(err)
+	var id string
+	err = row.Scan(&id)
+	fmt.Println(err, id)
+
+	// err = services.Services.Create(domain.CreateServicesCommand{
+	// 	Name:        optional.SetValue("test z"),
+	// 	Description: optional.SetValue("test z"),
+	// 	Price:       optional.SetValue(0.0),
+	// 	IsActive:    optional.SetValue(true),
+	// 	CreatedBy:   optional.SetValue(id),
+	// })
+	// fmt.Println(err)
+	res, err := services.User.Find(id, services.User.LoadServicesOne)
+	fmt.Println(err)
+	fmt.Println(res.Services)
 }

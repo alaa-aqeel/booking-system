@@ -2,6 +2,7 @@ package user_service
 
 import (
 	"context"
+	"time"
 
 	"github.com/alaa-aqeel/booking-system/app/domain"
 	"github.com/alaa-aqeel/booking-system/shared"
@@ -30,6 +31,7 @@ func (s *UserService) Update(id string, dto domain.UpdateUserCommand) error {
 	if len(data) == 0 {
 		return nil
 	}
+	data["updated_at"] = time.Now()
 
 	return s.UpdatePk(context.Background(), id, data)
 }
