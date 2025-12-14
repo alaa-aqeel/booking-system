@@ -42,7 +42,7 @@ func (s *UserService) Find(ids any, loads ...table.LoaderOne[domain.User]) (doma
 	return user, nil
 }
 
-func (s *UserService) GetAll(dto domain.UserQuery) ([]domain.User, error) {
+func (s *UserService) GetAll(dto domain.UserQuery, loads ...table.LoaderMany[domain.User]) ([]domain.User, error) {
 	page := dto.Page.ValueOrDefault(1)
 	limit := dto.Limit.ValueOrDefault(10)
 
@@ -64,5 +64,22 @@ func (s *UserService) GetAll(dto domain.UserQuery) ([]domain.User, error) {
 		return nil, err
 	}
 
-	return table.ScanRows(rows, s.toUser)
+	users, err := table.ScanRows(rows, s.toUser)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(loads) == 0 {
+		return users, nil
+	}
+
+	for _, load := range loads {
+		users, err = load(users)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return users, nil
 }

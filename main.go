@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/alaa-aqeel/booking-system/app/domain"
 	"github.com/alaa-aqeel/booking-system/app/services"
 	database "github.com/alaa-aqeel/booking-system/database/driver"
 	"github.com/joho/godotenv"
@@ -39,7 +40,7 @@ func main() {
 	// 	CreatedBy:   optional.SetValue(id),
 	// })
 	// fmt.Println(err)
-	res, err := services.User.Find(id, services.User.LoadServicesOne)
+	res, err := services.User.GetAll(domain.UserQuery{}, services.User.LoadServices)
 	fmt.Println(err)
-	fmt.Println(res.Services)
+	fmt.Println(res)
 }

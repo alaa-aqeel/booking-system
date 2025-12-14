@@ -1,9 +1,22 @@
 package services_service
 
 import (
+	"context"
+
 	"github.com/alaa-aqeel/booking-system/app/domain"
 	"github.com/alaa-aqeel/table"
 )
+
+func (s *ServicesService) GetBy(key string, ids []any) ([]domain.Services, error) {
+	row, err := s.Get(context.Background(), map[string]any{
+		key: ids,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return table.ScanRows(row, s.toServices)
+}
 
 func (s *ServicesService) LoadUser(services []domain.Services) ([]domain.Services, error) {
 

@@ -79,14 +79,3 @@ func (s *ServicesService) FindBy(key, id string, loads ...table.LoaderOne[domain
 
 	return services, nil
 }
-
-func (s *ServicesService) GetBy(key string, ids []any) ([]domain.Services, error) {
-	row, err := s.Get(context.Background(), map[string]any{
-		key: ids,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return table.ScanRows(row, s.toServices)
-}
